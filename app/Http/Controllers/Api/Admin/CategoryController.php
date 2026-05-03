@@ -2,20 +2,31 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
-use App\Http\Controllers\Controller;
 use App\Http\Requests\Admin\StoreCategoryRequest;
-use Illuminate\Http\Request;
 use App\Actions\Category\CreateCategoryAction;
+use App\Actions\Category\DeleteCategoryAction;
+use App\Actions\Category\GetCategoriesAction;
+use App\Actions\Category\UpdateCategoryAction;
 use App\DTOs\Category\CategoryDTO;
+use App\Http\Controllers\Api\BaseApiController;
+use App\Http\Requests\Admin\UpdateCategoryRequest;
+use App\Http\Resources\CategoryResource;
+use App\Models\Category;
+use Exception;
 
-class CategoryController extends Controller
+class CategoryController extends BaseApiController
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(GetCategoriesAction $action)
     {
-        //
+        $categories = $action->execute();
+
+        return $this->successResponse(
+            CategoryResource::collection($categories),
+            'Categories retrieved successfully'
+        );
     }
 
     /**
@@ -27,38 +38,53 @@ class CategoryController extends Controller
 
         $category = $action->execute($dto);
 
-        return response()->json(['category' => $category], 201);
+        return $this->createdResponse(
+            new CategoryResource($category),
+            'Category created successfully'
+        );
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Category $category)
     {
-        //
+        return $this->successResponse(
+            new CategoryResource($category),
+            'Category retrieved seccessfully'
+        );
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateCategoryRequest $request, Category $category, UpdateCategoryAction $action)
     {
-        //
+        $dto = CategoryDTO::fromRequest($request);
+        $category = $action->execute($category, $dto);
+
+        return $this->successResponse(
+            new CategoryResource($category),
+            'Category updated successfully'
+        );
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Category $category, DeleteCategoryAction $action)
     {
-        //
+        try {
+            $action->execute($category);
+            return $this->successResponse(
+                null,
+                'Category deleted successfully'
+            );
+        } catch (\Exception $e) {
+            return $this->errorResponse(
+                $e->getMessage(),
+            );
+        }
     }
 }
