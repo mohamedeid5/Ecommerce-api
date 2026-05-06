@@ -39,9 +39,14 @@ abstract class BaseApiController extends Controller
 
     protected function createdResponse(
         $data = null,
-        $message = 'Resource created successfully'
+        $message = 'Resource created successfully',
+        $code = 201
     )
     {
-        return $this->successResponse($data, $message);
+        return response()->json([
+            'status' => 'success',
+            'message' => $message,
+            'data' => $data
+        ], $code);
     }
 }

@@ -39,7 +39,8 @@ class ProductController extends BaseApiController
 
         return $this->createdResponse(
             new ProductResource($product),
-            'Product created successfully'
+            'Product created successfully',
+            201
         );
     }
 
@@ -68,7 +69,7 @@ class ProductController extends BaseApiController
 
         return $this->successResponse(
             new ProductResource($product),
-            'Product updated successfully'
+            'Product updated successfully',
         );
     }
 

@@ -9,7 +9,7 @@ class ProductDTO
     public function __construct(
         public int $category_id,
         public string $name,
-        public string $description,
+        public ?string $description = null,
         public float $price,
         public int $stock,
         public bool $is_active,

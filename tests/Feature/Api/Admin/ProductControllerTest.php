@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Api\Admin;
 
+use App\Models\Category;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -36,6 +37,25 @@ class ProductControllerTest extends TestCase
             'data' => [
                 '*' => ['id', 'name', 'slug', 'price']
             ]
+        ]);
+    }
+
+    public function test_can_create_product()
+    {
+        $category = Category::factory()->create();
+
+        $data = [
+            'category_id' => $category->id,
+            'name' => 'Test Product',
+            'price' => 100,
+            'stock' => 10,
+            'is_active' => 1
+        ];
+
+        $response = $this->postJson(route('admin.products.store'), $data);
+        $response->assertCreated();
+        $this->assertDatabaseHas('products', [
+            'name' => 'Test Product'
         ]);
     }
 }
