@@ -11,7 +11,7 @@ class UploadProductImagesAction
     {
         $product->primaryImage()->delete();
 
-        $path = $this->storeFile($file);
+        $path = $this->storeFile($file, 'primary', $product->id);
 
         return $product->images()->create([
             'path' => $path,
@@ -28,7 +28,7 @@ class UploadProductImagesAction
 
         foreach ($files as $index => $file) {
 
-            $path = $this->storeFile($file);
+            $path = $this->storeFile($file, 'gallery', $product->id);
 
             $uploadedImages[] = $product->images()->create([
                 'path' => $path,
@@ -41,8 +41,8 @@ class UploadProductImagesAction
     }
 
 
-    public function storeFile(UploadedFile $file)
+    public function storeFile(UploadedFile $file, string $filename, int $productId)
     {
-        return $file->store('products', 'public');
+        return $file->store("products/{$filename}/{$productId}", 'public');
     }
 }

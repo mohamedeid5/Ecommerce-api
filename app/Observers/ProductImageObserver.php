@@ -20,7 +20,6 @@ class ProductImageObserver
      */
     public function updated(ProductImage $image): void
     {
-        Storage::disk('public')->delete($image->path);
     }
 
     /**
@@ -28,7 +27,6 @@ class ProductImageObserver
      */
     public function deleted(ProductImage $image): void
     {
-        Storage::disk('public')->delete($image->path);
     }
 
     /**
