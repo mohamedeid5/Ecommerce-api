@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\Admin\CategoryController;
 use App\Http\Controllers\Api\Admin\ProductController;
+use App\Http\Controllers\Api\Admin\ProductImageController;
 use App\Http\Controllers\Api\AuthController;
 use Illuminate\Support\Facades\Route;
 
@@ -15,6 +16,13 @@ Route::middleware('auth:sanctum')->group(function(){
 
     Route::prefix('admin')->name('admin.')->group(function() {
         Route::apiResource('categories', CategoryController::class);
+
+        // product images
+        Route::post('products/{product}/images/primary', [ProductImageController::class, 'uploadPrimary']);
+        Route::post('products/{product}/images/gallery', [ProductImageController::class, 'uploadGallery']);
+
+        Route::delete('products/images/{image}', [ProductImageController::class, 'destroy']);
+        Route::patch('products/{product}/images/reorder', [ProductImageController::class, 'reorder']);
 
         Route::get('products/trashed', [ProductController::class, 'trashed']);
         Route::post('products/{id}/restore', [ProductController::class, 'restore']);

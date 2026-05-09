@@ -7,14 +7,15 @@ use Illuminate\Http\UploadedFile;
 class ProductDTO
 {
     public function __construct(
-        public int $category_id,
-        public string $name,
-        public ?string $description = null,
-        public float $price,
-        public int $stock,
-        public bool $is_active,
-        public ?UploadedFile $primaryImage = null,
-        public ?array $galleryImages = null,
+        public readonly ?int $category_id,
+        public readonly ?string $name,
+        public readonly ?string $description = null,
+        public readonly ?float $price,
+        public readonly ?int $stock,
+        public readonly ?string $sku,
+        public readonly ?bool $status,
+        public readonly ?UploadedFile $primaryImage = null,
+        public readonly ?array $galleryImages = null,
 
     ){}
 
@@ -26,7 +27,8 @@ class ProductDTO
             description: $request->validated('description'),
             price: $request->validated('price'),
             stock: $request->validated('stock'),
-            is_active: $request->validated('is_active'),
+            sku: $request->validated('sku'),
+            status: $request->validated('status'),
             primaryImage: $request->validated('primary_image'),
             galleryImages: $request->validated('gallery_images'),
         );
@@ -39,8 +41,9 @@ class ProductDTO
             'description' => $this->description,
             'price' => $this->price,
             'stock' => $this->stock,
+            'sku' => $this->sku,
             'category_id' => $this->category_id,
-            'is_active' => $this->is_active,
+            'status' => $this->status,
         ];
     }
 }

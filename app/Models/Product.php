@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\ProductStatus;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -24,6 +25,10 @@ class Product extends Model
         'is_active',
     ];
 
+    protected $casts = [
+        'status' => ProductStatus::class,
+    ];
+
      /**
      * Get the options for generating the slug.
      */
@@ -32,6 +37,11 @@ class Product extends Model
         return SlugOptions::create()
             ->generateSlugsFrom('name')
             ->saveSlugsTo('slug');
+    }
+
+    public function getIsInStockAttribute()
+    {
+        return $this->stock > 0;
     }
 
     public function category()
@@ -53,13 +63,17 @@ class Product extends Model
     {
         return $this->hasMany(ProductImage::class)
             ->where('is_primary', false)
-            ->orderBy('sort_order');
+            ->orderBy('sort_order')
+            ->orderBy('id');
     }
 
     public function scopeSearch($query, $term)
     {
-        return $query->where('name', 'LIKE', "%{$term}%")
-            ->orWhere('description', 'LIKE', "%{$term}%");
+        return $query->where(function($q) use ($term) {
+             $q->where('name', 'LIKE', "%{$term}%")
+                ->orWhere('description', 'LIKE', "%{$term}%");
+        });
+
     }
 
     public function scopePriceBetween($query, $min, $max)
@@ -67,4 +81,9 @@ class Product extends Model
         return $query->whereBetween('price', [$min, $max]);
     }
 
+    public function scopeAvailable($query)
+    {
+        return $query->where('is_active', ProductStatus::ACTIVE)
+            ->where('stock', '>', 0);
+    }
 }

@@ -12,6 +12,8 @@ use Spatie\QueryBuilder\AllowedFilter;
 class ProductService
 {
 
+    private array $relations = ['category', 'primaryImage', 'galleryImages'];
+
     public function __construct(
         private UploadProductImagesAction $uploadImagesAction
     ) {}
@@ -19,7 +21,7 @@ class ProductService
     public function getAll(int $perPage = 10)
     {
         return QueryBuilder::for(Product::class)
-            ->with(['category', 'primaryImage', 'galleryImages'])
+            ->with($this->relations)
             ->allowedFilters(
                 'name',
                 AllowedFilter::exact('is_active'),
@@ -35,7 +37,7 @@ class ProductService
     public function createProduct(ProductDTO $dto)
     {
 
-        return DB::transaction(function () use ($dto,) {
+        return DB::transaction(function () use ($dto) {
 
             $product = Product::create([
                 'category_id' => $dto->category_id,
@@ -43,7 +45,8 @@ class ProductService
                 'description' => $dto->description,
                 'price'       => $dto->price,
                 'stock'       => $dto->stock,
-                'is_active'   => $dto->is_active,
+                'sku'         => $dto->sku,
+                'status'   => $dto->status,
             ]);
 
             if ($dto->primaryImage) {
@@ -54,56 +57,60 @@ class ProductService
                 $this->uploadImagesAction->uploadGallery($product, $dto->galleryImages);
             }
 
-            return $product->load(['category', 'primaryImage', 'galleryImages']);
+            return $product->load($this->relations);
         });
 
     }
 
     public function updateProduct(Product $product, ProductDTO $dto)
     {
-        return DB::transaction(function () use ($product, $dto) {
-           $product->update([
-                'category_id' => $dto->category_id ?? $product->category_id,
-                'name'        => $dto->name ?? $product->name,
-                'description' => $dto->description ?? $product->description,
-                'price'       => $dto->price ?? $product->price,
-                'stock'       => $dto->stock ?? $product->stock,
-                'is_active'   => $dto->is_active ?? $product->is_active,
-           ]);
+    return DB::transaction(function () use ($product, $dto) {
 
-           if ($dto->primaryImage) {
-                $this->uploadImagesAction->uploadPrimary($product, $dto->primaryImage);
-            }
+        $data = array_filter([
+            'category_id' => $dto->category_id,
+            'name'        => $dto->name,
+            'description' => $dto->description,
+            'price'       => $dto->price,
+            'stock'       => $dto->stock,
+            'sku'         => $dto->sku,
+            'status'      => $dto->status,
+        ], fn($value)=>!is_null($value));
 
-            if($dto->galleryImages) {
-                $this->uploadImagesAction->uploadGallery($product, $dto->galleryImages);
-            }
+        $product->update($data);
 
-            return $product->refresh()->load(['category', 'primaryImage', 'galleryImages']);
-        });
+        if ($dto->primaryImage) {
+            $this->uploadImagesAction->uploadPrimary($product, $dto->primaryImage);
+        }
+
+        if($dto->galleryImages) {
+            $this->uploadImagesAction->uploadGallery($product, $dto->galleryImages);
+        }
+
+        return $product->refresh()->load($this->relations);
+    });
     }
 
     public function deleteProduct(Product $product)
     {
-        $product->delete();
+        return $product->delete();
     }
 
     public function trashedProducts()
     {
         return Product::onlyTrashed()
-            ->with(['category', 'primaryImage', 'galleryImages'])
+            ->with($this->relations)
             ->paginate(10);
     }
 
     public function restoreProduct($id)
     {
         $product = Product::onlyTrashed()->findOrFail($id);
-        $product->restore();
+        return $product->restore();
     }
 
     public function forceDeleteProduct($id)
     {
         $product = Product::onlyTrashed()->findOrFail($id);
-        $product->forceDelete();
+        return $product->forceDelete();
     }
 }
