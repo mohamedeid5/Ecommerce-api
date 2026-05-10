@@ -21,12 +21,17 @@ class Product extends Model
         'slug',
         'description',
         'price',
+        'sku',
+        'sale_price',
         'stock',
         'is_active',
     ];
 
     protected $casts = [
         'status' => ProductStatus::class,
+        'price' => 'decimal:2',
+        'sale_price' => 'decimal:2',
+        'stock' => 'integer',
     ];
 
      /**
@@ -85,5 +90,12 @@ class Product extends Model
     {
         return $query->where('is_active', ProductStatus::ACTIVE)
             ->where('stock', '>', 0);
+    }
+
+    public function scopeInStock($query, $value)
+    {
+        return $value ?
+            $query->where('stock', '>', 0)
+            : $query->where('stock', '=', 0);
     }
 }

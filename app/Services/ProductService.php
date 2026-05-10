@@ -24,10 +24,15 @@ class ProductService
             ->with($this->relations)
             ->allowedFilters(
                 'name',
-                AllowedFilter::exact('is_active'),
+                AllowedFilter::exact('status'),
                 AllowedFilter::exact('category_id'),
                 AllowedFilter::scope('price_between'),
+                AllowedFilter::scope('in_stock'),
                 AllowedFilter::scope('search'),
+                AllowedFilter::callback('trashed', function($query, $value) {
+                    if ($value === 'with') $query->withTrashed();
+                    if ($value === 'only') $query->onlyTrashed();
+                }),
             )
             ->allowedSorts('name', 'price', 'created_at')
             ->defaultSort('-created_at')
@@ -44,6 +49,7 @@ class ProductService
                 'name'        => $dto->name,
                 'description' => $dto->description,
                 'price'       => $dto->price,
+                'sale_price' => $dto->sale_price,
                 'stock'       => $dto->stock,
                 'sku'         => $dto->sku,
                 'status'   => $dto->status,
@@ -53,7 +59,7 @@ class ProductService
                 $this->uploadImagesAction->uploadPrimary($product, $dto->primaryImage);
             }
 
-            if($dto->galleryImages) {
+            if ($dto->galleryImages) {
                 $this->uploadImagesAction->uploadGallery($product, $dto->galleryImages);
             }
 
@@ -71,10 +77,11 @@ class ProductService
             'name'        => $dto->name,
             'description' => $dto->description,
             'price'       => $dto->price,
+            'sale_price' => $dto->sale_price,
             'stock'       => $dto->stock,
             'sku'         => $dto->sku,
             'status'      => $dto->status,
-        ], fn($value)=>!is_null($value));
+        ], fn($value) => !is_null($value));
 
         $product->update($data);
 
@@ -82,7 +89,7 @@ class ProductService
             $this->uploadImagesAction->uploadPrimary($product, $dto->primaryImage);
         }
 
-        if($dto->galleryImages) {
+        if ($dto->galleryImages) {
             $this->uploadImagesAction->uploadGallery($product, $dto->galleryImages);
         }
 

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->text('description')->nullable();
             $table->decimal('price', 8, 2);
+            $table->decimal('sale_price', 10, 2)->nullable();
             $table->unsignedInteger('stock')->default(0);
             $table->string('sku')->unique();
             $table->string('status')->default(ProductStatus::DRAFT->value);

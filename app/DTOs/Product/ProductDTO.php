@@ -2,6 +2,7 @@
 
 namespace App\DTOs\Product;
 
+use App\Enums\ProductStatus;
 use Illuminate\Http\UploadedFile;
 
 class ProductDTO
@@ -9,11 +10,12 @@ class ProductDTO
     public function __construct(
         public readonly ?int $category_id,
         public readonly ?string $name,
-        public readonly ?string $description = null,
+        public readonly ?string $description,
         public readonly ?float $price,
+        public readonly ?float $sale_price,
         public readonly ?int $stock,
         public readonly ?string $sku,
-        public readonly ?bool $status,
+        public readonly ?ProductStatus $status,
         public readonly ?UploadedFile $primaryImage = null,
         public readonly ?array $galleryImages = null,
 
@@ -26,6 +28,7 @@ class ProductDTO
             name: $request->validated('name'),
             description: $request->validated('description'),
             price: $request->validated('price'),
+            sale_price: $request->validated('sale_price'),
             stock: $request->validated('stock'),
             sku: $request->validated('sku'),
             status: $request->validated('status'),

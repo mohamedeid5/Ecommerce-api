@@ -8,18 +8,23 @@ use App\Http\Requests\Admin\Product\UpdateProductRequest;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use App\Services\ProductService;
+use Illuminate\Support\Facades\Gate;
 
 class ProductController extends BaseApiController
 {
+
     public function __construct(
         protected ProductService $productService
-    ) {}
+    )
+    {}
 
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
+        Gate::authorize('viewAny', Product::class);
+
         $products = $this->productService->getAll(10);
 
         return $this->successResponse(
@@ -33,6 +38,8 @@ class ProductController extends BaseApiController
      */
     public function store(StoreProductRequest $request)
     {
+        Gate::authorize('create', Product::class);
+
         $dto = ProductDTO::fromRequest($request);
 
         $product = $this->productService->createProduct($dto);
@@ -49,6 +56,8 @@ class ProductController extends BaseApiController
      */
     public function show(Product $product)
     {
+        Gate::authorize('view', Product::class);
+
         $product->load(['category', 'primaryImage', 'galleryImages']);
 
         return $this->successResponse(
@@ -63,6 +72,8 @@ class ProductController extends BaseApiController
      */
     public function update(UpdateProductRequest $request, Product $product)
     {
+        Gate::authorize('update', Product::class);
+
         $dto = ProductDTO::fromRequest($request);
 
         $product = $this->productService->updateProduct($product, $dto);
@@ -78,6 +89,8 @@ class ProductController extends BaseApiController
      */
     public function destroy(Product $product)
     {
+        Gate::authorize('delete', Product::class);
+
         $this->productService->deleteProduct($product);
 
         return $this->successResponse(
@@ -88,6 +101,8 @@ class ProductController extends BaseApiController
 
     public function trashed()
     {
+        Gate::authorize('view', Product::class);
+
         $products = $this->productService->trashedProducts();
 
         return $this->successResponse(
@@ -98,6 +113,8 @@ class ProductController extends BaseApiController
 
     public function restore($id)
     {
+        Gate::authorize('delete', Product::class);
+
         $this->productService->restoreProduct($id);
 
         return $this->successResponse(
@@ -108,6 +125,8 @@ class ProductController extends BaseApiController
 
     public function forceDelete($id)
     {
+        Gate::authorize('delete', Product::class);
+
         $this->productService->forceDeleteProduct($id);
 
         return $this->successResponse(

@@ -18,7 +18,7 @@ class ProductImageController extends BaseApiController
     public function __construct(
          private UploadProductImagesAction $uploadProductImagesAction,
          private DeleteProductImageAction $deleteProductImageAction,
-         private ReorderProductImagesAction $recordProductImageAction
+         private ReorderProductImagesAction $reorderProductImagesAction
     ) {}
 
     public function uploadPrimary(UploadPrimaryImageRequest $request, Product $product)
@@ -59,7 +59,7 @@ class ProductImageController extends BaseApiController
 
     public function reorder(ReorderProductImagesRequest $request, Product $product)
     {
-        $this->recordProductImageAction->handle($product, $request->input('image_ids'));
+        $this->reorderProductImagesAction->handle($product, $request->input('image_ids'));
 
         return $this->successResponse(
             null,
