@@ -7,7 +7,7 @@ use App\Http\Requests\Admin\Product\StoreProductRequest;
 use App\Http\Requests\Admin\Product\UpdateProductRequest;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
-use App\Services\ProductService;
+use App\Services\Product\ProductService;
 use Illuminate\Support\Facades\Gate;
 
 class ProductController extends BaseApiController
