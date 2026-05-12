@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers\Api\Admin;
 
-use App\Http\Requests\Admin\StoreCategoryRequest;
+use App\Http\Requests\Category\StoreCategoryRequest;
 use App\Actions\Category\CreateCategoryAction;
 use App\Actions\Category\DeleteCategoryAction;
 use App\Actions\Category\GetCategoriesAction;
 use App\Actions\Category\UpdateCategoryAction;
 use App\DTOs\Category\CategoryDTO;
 use App\Http\Controllers\Api\BaseApiController;
-use App\Http\Requests\Admin\UpdateCategoryRequest;
+use App\Http\Requests\Category\UpdateCategoryRequest;
 use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 use Exception;
