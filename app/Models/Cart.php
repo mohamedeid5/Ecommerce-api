@@ -8,7 +8,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Cart extends Model
 {
-    protected $fillable = ['user_id', 'session_id', 'expires_at'];
+    protected $fillable = [
+        'user_id',
+        'guest_token',
+        'expires_at'
+    ];
 
     protected $casts = [
         'expires_at' => 'datetime',

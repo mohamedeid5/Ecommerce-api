@@ -4,13 +4,19 @@ use App\Http\Controllers\Api\Admin\CategoryController;
 use App\Http\Controllers\Api\Admin\ProductController;
 use App\Http\Controllers\Api\Admin\ProductImageController;
 use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\V1\CartController;
+use App\Http\Controllers\Api\Admin\CartController;
 use Illuminate\Support\Facades\Route;
-
-
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+
+Route::prefix('cart')->middleware('cart')->group(function () {
+    Route::get('/', [CartController::class, 'show']);
+    Route::post('/items', [CartController::class, 'addItem']);
+    Route::patch('/items/{item}', [CartController::class, 'updateItem']);
+    Route::delete('/items/{item}', [CartController::class, 'removeItem']);
+    Route::delete('/', [CartController::class, 'clear']);
+});
 
 Route::middleware(['auth:sanctum', 'role:admin'])->group(function(){
     Route::post('/logout', [AuthController::class, 'logout']);
@@ -29,14 +35,6 @@ Route::middleware(['auth:sanctum', 'role:admin'])->group(function(){
         Route::post('products/{id}/restore', [ProductController::class, 'restore']);
         Route::delete('products/{id}/force-delete', [ProductController::class, 'forceDelete']);
         Route::apiResource('products', ProductController::class);
-
-        Route::prefix('cart')->middleware('cart')->group(function () {
-            Route::get('/', [CartController::class, 'show']);
-            Route::post('/items', [CartController::class, 'addItem']);
-            Route::patch('/items/{item}', [CartController::class, 'updateItem']);
-            Route::delete('/items/{item}', [CartController::class, 'removeItem']);
-            Route::delete('/', [CartController::class, 'clear']);
-        });
 
     });
 });

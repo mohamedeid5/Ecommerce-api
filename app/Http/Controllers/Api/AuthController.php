@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Actions\Cart\MergeGuestCartAction;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
@@ -37,7 +38,7 @@ class AuthController extends Controller
         ], 201);
     }
 
-    public function login(LoginRequest $request)
+    public function login(LoginRequest $request, MergeGuestCartAction $mergeAction)
     {
         if(!Auth::attempt($request->only('email', 'password'))) {
             return response()->json([
@@ -48,6 +49,11 @@ class AuthController extends Controller
 
         $user = User::where('email', $request->email)->firstOrFail();
         $token = $user->createToken('auth_token')->plainTextToken;
+
+        $guestToken = $request->header('X-Cart-Token');
+        if($guestToken) {
+            $mergeAction->execute($guestToken, $user);
+        }
 
         return response()->json([
             'status' => true,

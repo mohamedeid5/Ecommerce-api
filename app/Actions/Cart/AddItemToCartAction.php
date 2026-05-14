@@ -15,7 +15,7 @@ class AddItemToCartAction
         return DB::transaction(function() use ($cart, $productId, $quantity) {
             $product = Product::lockForUpdate()->findOrFail($productId);
 
-            if($product->status !== 'active') {
+            if($product->status->value !== 'active') {
                 throw new ProductNotAvailableException();
             }
 
@@ -33,7 +33,7 @@ class AddItemToCartAction
             $unitPrice = $product->sale_price ?? $product->price;
 
             if($existingItem) {
-                $cart->update([
+                $existingItem->update([
                     'quantity' => $totalQuantity,
                     'unit_price' => $unitPrice
                 ]);
