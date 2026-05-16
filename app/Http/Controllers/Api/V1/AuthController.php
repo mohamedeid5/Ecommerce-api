@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api;
+namespace App\Http\Controllers\Api\V1;
 
 use App\Actions\Cart\MergeGuestCartAction;
 use App\Http\Controllers\Controller;
@@ -13,9 +13,8 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    // DocBlock
 
-    public function register(RegisterRequest $request)
+    public function register(RegisterRequest $request, MergeGuestCartAction $mergeAction)
     {
         $data = $request->validated();
 
@@ -26,6 +25,11 @@ class AuthController extends Controller
         $user->assignRole('customer');
 
         $token = $user->createToken('auth_token')->plainTextToken;
+
+        $guestToken = $request->header('X-Cart-Token');
+        if ($guestToken) {
+            $mergeAction->execute($guestToken, $user);
+        }
 
         return response()->json([
             'status' => true,

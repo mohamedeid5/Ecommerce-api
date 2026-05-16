@@ -1,40 +1,41 @@
 <?php
 
-use App\Http\Controllers\Api\Admin\CategoryController;
-use App\Http\Controllers\Api\Admin\ProductController;
-use App\Http\Controllers\Api\Admin\ProductImageController;
-use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\Admin\CartController;
+use App\Http\Controllers\Api\V1\Admin\CategoryController;
+use App\Http\Controllers\Api\V1\Admin\ProductController;
+use App\Http\Controllers\Api\V1\Admin\ProductImageController;
+use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\Admin\CartController;
 use Illuminate\Support\Facades\Route;
 
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
+Route::prefix('v1')->group(function () {
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/login', [AuthController::class, 'login']);
 
-Route::prefix('cart')->middleware('cart')->group(function () {
-    Route::get('/', [CartController::class, 'show']);
-    Route::post('/items', [CartController::class, 'addItem']);
-    Route::patch('/items/{item}', [CartController::class, 'updateItem']);
-    Route::delete('/items/{item}', [CartController::class, 'removeItem']);
-    Route::delete('/', [CartController::class, 'clear']);
-});
+    Route::prefix('cart')->middleware('cart')->group(function () {
+        Route::get('/', [CartController::class, 'show']);
+        Route::post('/items', [CartController::class, 'addItem']);
+        Route::patch('/items/{item}', [CartController::class, 'updateItem']);
+        Route::delete('/items/{item}', [CartController::class, 'removeItem']);
+        Route::delete('/', [CartController::class, 'clear']);
+    });
 
-Route::middleware(['auth:sanctum', 'role:admin'])->group(function(){
-    Route::post('/logout', [AuthController::class, 'logout']);
+    Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
+        Route::post('/logout', [AuthController::class, 'logout']);
 
-    Route::prefix('admin')->name('admin.')->group(function() {
-        Route::apiResource('categories', CategoryController::class);
+        Route::prefix('admin')->name('admin.')->group(function () {
+            Route::apiResource('categories', CategoryController::class);
 
-        // product images
-        Route::post('products/{product}/images/primary', [ProductImageController::class, 'uploadPrimary']);
-        Route::post('products/{product}/images/gallery', [ProductImageController::class, 'uploadGallery']);
+            // product images
+            Route::post('products/{product}/images/primary', [ProductImageController::class, 'uploadPrimary']);
+            Route::post('products/{product}/images/gallery', [ProductImageController::class, 'uploadGallery']);
 
-        Route::delete('products/images/{image}', [ProductImageController::class, 'destroy']);
-        Route::patch('products/{product}/images/reorder', [ProductImageController::class, 'reorder']);
+            Route::delete('products/images/{image}', [ProductImageController::class, 'destroy']);
+            Route::patch('products/{product}/images/reorder', [ProductImageController::class, 'reorder']);
 
-        Route::get('products/trashed', [ProductController::class, 'trashed']);
-        Route::post('products/{id}/restore', [ProductController::class, 'restore']);
-        Route::delete('products/{id}/force-delete', [ProductController::class, 'forceDelete']);
-        Route::apiResource('products', ProductController::class);
-
+            Route::get('products/trashed', [ProductController::class, 'trashed']);
+            Route::post('products/{id}/restore', [ProductController::class, 'restore']);
+            Route::delete('products/{id}/force-delete', [ProductController::class, 'forceDelete']);
+            Route::apiResource('products', ProductController::class);
+        });
     });
 });

@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers\Api\Admin;
+namespace App\Http\Controllers\Api\V1\Admin;
 
 use App\Actions\Product\DeleteProductImageAction;
 use App\Actions\Product\ReorderProductImagesAction;
 use App\Actions\Product\UploadProductImagesAction;
-use App\Http\Controllers\Api\BaseApiController;
+use App\Http\Controllers\Api\V1\BaseApiController;
 use App\Http\Requests\Product\ReorderProductImagesRequest;
 use App\Http\Requests\Product\UploadGalleryImagesRequest;
 use App\Http\Requests\Product\UploadPrimaryImageRequest;

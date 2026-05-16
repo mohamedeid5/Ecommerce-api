@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\Admin;
+namespace App\Http\Controllers\Api\V1\Admin;
 
 use App\Http\Requests\Category\StoreCategoryRequest;
 use App\Actions\Category\CreateCategoryAction;
@@ -8,7 +8,7 @@ use App\Actions\Category\DeleteCategoryAction;
 use App\Actions\Category\GetCategoriesAction;
 use App\Actions\Category\UpdateCategoryAction;
 use App\DTOs\Category\CategoryDTO;
-use App\Http\Controllers\Api\BaseApiController;
+use App\Http\Controllers\Api\V1\BaseApiController;
 use App\Http\Requests\Category\UpdateCategoryRequest;
 use App\Http\Resources\CategoryResource;
 use App\Models\Category;
@@ -16,9 +16,6 @@ use Exception;
 
 class CategoryController extends BaseApiController
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index(GetCategoriesAction $action)
     {
         $categories = $action->execute();
@@ -29,9 +26,6 @@ class CategoryController extends BaseApiController
         );
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreCategoryRequest $request, CreateCategoryAction $action)
     {
         $dto = CategoryDTO::fromRequest($request);
@@ -44,9 +38,6 @@ class CategoryController extends BaseApiController
         );
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Category $category)
     {
         return $this->successResponse(
@@ -55,10 +46,6 @@ class CategoryController extends BaseApiController
         );
     }
 
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(UpdateCategoryRequest $request, Category $category, UpdateCategoryAction $action)
     {
         $dto = CategoryDTO::fromRequest($request);
@@ -70,9 +57,6 @@ class CategoryController extends BaseApiController
         );
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Category $category, DeleteCategoryAction $action)
     {
         try {

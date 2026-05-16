@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Api\Admin;
+namespace App\Http\Controllers\Api\V1\Admin;
 
 use App\DTOs\Product\ProductDTO;
 use App\Http\Requests\Product\StoreProductRequest;
@@ -18,9 +18,6 @@ class ProductController extends BaseApiController
     )
     {}
 
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         Gate::authorize('viewAny', Product::class);
@@ -30,12 +27,9 @@ class ProductController extends BaseApiController
         return $this->successResponse(
             ProductResource::collection($products),
             'Products retrieved successfully'
-    );
+        );
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(StoreProductRequest $request)
     {
         Gate::authorize('create', Product::class);
@@ -51,9 +45,6 @@ class ProductController extends BaseApiController
         );
     }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(Product $product)
     {
         Gate::authorize('view', Product::class);
@@ -66,10 +57,6 @@ class ProductController extends BaseApiController
         );
     }
 
-
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(UpdateProductRequest $request, Product $product)
     {
         Gate::authorize('update', Product::class);
@@ -84,9 +71,6 @@ class ProductController extends BaseApiController
         );
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(Product $product)
     {
         Gate::authorize('delete', Product::class);
