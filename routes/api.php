@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\V1\Admin\AddressController;
 use App\Http\Controllers\Api\V1\Admin\CategoryController;
 use App\Http\Controllers\Api\V1\Admin\ProductController;
 use App\Http\Controllers\Api\V1\Admin\ProductImageController;
@@ -17,6 +18,15 @@ Route::prefix('v1')->group(function () {
         Route::patch('/items/{item}', [CartController::class, 'updateItem']);
         Route::delete('/items/{item}', [CartController::class, 'removeItem']);
         Route::delete('/', [CartController::class, 'clear']);
+    });
+
+    Route::prefix('addresses')->middleware('auth:sanctum')->group(function () {
+        Route::get('/', [AddressController::class, 'index']);
+        Route::post('/', [AddressController::class, 'store']);
+        Route::get('/{address}', [AddressController::class, 'show']);
+        Route::patch('/{address}', [AddressController::class, 'update']);
+        Route::delete('/{address}', [AddressController::class, 'destroy']);
+        Route::post('/{address}/set-default', [AddressController::class, 'setDefault']);
     });
 
     Route::middleware(['auth:sanctum', 'role:admin'])->group(function () {
@@ -37,5 +47,6 @@ Route::prefix('v1')->group(function () {
             Route::delete('products/{id}/force-delete', [ProductController::class, 'forceDelete']);
             Route::apiResource('products', ProductController::class);
         });
+
     });
 });

@@ -36,7 +36,7 @@ class AddressService
                 $this->unsetDefaultForUser($user);
             }
 
-            return $user->create($data);
+            return $user->addresses()->create($data);
         });
     }
 
@@ -106,7 +106,7 @@ class AddressService
             ->first();
 
         if($fallback) {
-            $fallback->update(['is_default', true]);
+            $fallback->update(['is_default' => true]);
         }
     }
 }
